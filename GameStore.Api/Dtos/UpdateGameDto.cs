@@ -1,3 +1,4 @@
+// Purpose: Dto for updating a game.
 using System.ComponentModel.DataAnnotations;
 
 namespace GameStore.Api.Dtos;

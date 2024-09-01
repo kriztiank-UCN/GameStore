@@ -1,3 +1,4 @@
+// Purpose: DTO for Game entity.
 namespace GameStore.Api.Dtos;
 
 // a record is imutable

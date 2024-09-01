@@ -1,12 +1,13 @@
 // Purpose: Contains endpoints for the Games controller.
+using GameStore.Api.Data;
 using GameStore.Api.Dtos;
+using GameStore.Api.Entities;
 
 namespace GameStore.Api.Endpoints;
 // static class with extension methods, with one call we can map all the endpoints
 public static class GamesEndpoints
 {
   const string GetGameEndpointName = "GetGame";
-  // list of games
   private static readonly List<GameDto> games = [
       new(
         1,
@@ -49,17 +50,32 @@ public static class GamesEndpoints
     .WithName(GetGameEndpointName);
 
     // POST /games
-    group.MapPost("/", (CreateGameDto newGame) =>
+    // CreateGameDto is a record class that contains the properties of a game
+    group.MapPost("/", (CreateGameDto newGame, GameStoreContext dbContext) =>
     {
-      GameDto game = new(
-      games.Count + 1,
-      newGame.Name,
-      newGame.Genre,
-      newGame.Price,
-      newGame.ReleaseDate
-  );
-      games.Add(game);
-      return Results.CreatedAtRoute(GetGameEndpointName, new { id = game.Id }, game);
+
+      Game game = new()
+      {
+        Name = newGame.Name,
+        Genre = dbContext.Genres.Find(newGame.GenreId),
+        GenreId = newGame.GenreId,
+        Price = newGame.Price,
+        ReleaseDate = newGame.ReleaseDate
+      };
+
+      dbContext.Add(game);
+      dbContext.SaveChanges();
+
+      GameDto gameDto = new(
+        game.Id,
+        game.Name,
+        // ! null forgiving operator, is used to tell the compiler that Genre is not null
+        game.Genre!.Name,
+        game.Price,
+        game.ReleaseDate
+        );
+
+      return Results.CreatedAtRoute(GetGameEndpointName, new { id = game.Id }, gameDto);
     });
 
     // PUT /games/1

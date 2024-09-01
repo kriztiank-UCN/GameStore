@@ -6,10 +6,10 @@ POST http://localhost:5196/games
 Content-Type: application/json
 
 {
-  "name": "game 1",
-  "genre": "Action",
-  "price": 10.99,
-  "releaseDate": "2021-01-01"
+  "name": "Street Fighting II",
+  "genreId": 1,
+  "price": 9.99,
+  "releaseDate": "1992-07-15"
 }
 ###
 PUT http://localhost:5196/games/5
