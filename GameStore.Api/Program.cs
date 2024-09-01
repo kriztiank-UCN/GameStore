@@ -1,3 +1,4 @@
+// Purpose: Entry point of the application.
 using GameStore.Api.Dtos;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -5,7 +6,7 @@ var builder = WebApplication.CreateBuilder(args);
 var app = builder.Build();
 
 const string GetGameEndpointName = "GetGame";
-
+// Dummy data
 List<GameDto> games = [
     new(
         1,
