@@ -10,7 +10,7 @@ namespace GameStore.Api.Endpoints;
 public static class GamesEndpoints
 {
   const string GetGameEndpointName = "GetGame";
-  
+
   // declare extension method to extend the functionality of WebApplication
   public static RouteGroupBuilder MapGamesEndpoints(this WebApplication app)
   {
@@ -18,16 +18,17 @@ public static class GamesEndpoints
     var group = app.MapGroup("games").WithParameterValidation();
 
     // GET /games
-    group.MapGet("/", (GameStoreContext DbContext) =>
-        DbContext.Games
+    group.MapGet("/", async (GameStoreContext dbContext) =>
+        await dbContext.Games
             .Include(game => game.Genre)
             .Select(game => game.ToGameSummaryDto())
-            .AsNoTracking());
+            .AsNoTracking()
+            .ToListAsync());
 
     // GET /games/1
-    group.MapGet("/{id}", (int id, GameStoreContext dbContext) =>
+    group.MapGet("/{id}", async (int id, GameStoreContext dbContext) =>
     {
-      Game? game = dbContext.Games.Find(id);
+      Game? game = await dbContext.Games.FindAsync(id);
       // 404 Not Found
       return game is null
         ? Results.NotFound()
@@ -37,14 +38,14 @@ public static class GamesEndpoints
 
     // POST /games
     // CreateGameDto is a record class that contains the properties of a game
-    group.MapPost("/", (CreateGameDto newGame, GameStoreContext dbContext) =>
+    group.MapPost("/", async (CreateGameDto newGame, GameStoreContext dbContext) =>
     {
       // Create entity from DTO (ToEntity is passed in from GameMapping.cs)
       Game game = newGame.ToEntity();
 
       // Add entity to the database
       dbContext.Add(game);
-      dbContext.SaveChanges();
+      await dbContext.SaveChangesAsync();
 
       // Return back to the client (ToDto is passed in from GameMapping.cs)
       return Results.CreatedAtRoute(
@@ -54,9 +55,9 @@ public static class GamesEndpoints
     });
 
     // PUT /games/1
-    group.MapPut("/{id}", (int id, UpdateGameDto updatedGame, GameStoreContext dbContext) =>
+    group.MapPut("/{id}", async (int id, UpdateGameDto updatedGame, GameStoreContext dbContext) =>
     {
-      var existingGame = dbContext.Games.Find(id);
+      var existingGame = await dbContext.Games.FindAsync(id);
 
       // 404 Not Found
       if (existingGame is null)
@@ -68,17 +69,17 @@ public static class GamesEndpoints
           .CurrentValues
           .SetValues(updatedGame.ToEntity(id));
 
-      dbContext.SaveChanges();
+      await dbContext.SaveChangesAsync();
 
       return Results.NoContent();
     });
 
     // DELETE /games/1
-    group.MapDelete("/{id}", (int id, GameStoreContext dbContext) =>
+    group.MapDelete("/{id}", async (int id, GameStoreContext dbContext) =>
     {
-      dbContext.Games
+      await dbContext.Games
           .Where(game => game.Id == id)
-          .ExecuteDelete();
+          .ExecuteDeleteAsync();
 
       return Results.NoContent();
     });

@@ -1,12 +1,12 @@
 Get http://localhost:5196/games
 ###
-Get http://localhost:5196/games/1
+Get http://localhost:5196/games/2
 ###
 POST http://localhost:5196/games
 Content-Type: application/json
 
 {
-    "name": "Street Fighting II Turbo 2",
+    "name": "Street Fighting II Turbo",
     "genreId": 1,
     "price": 9.99,
     "releaseDate": "1992-07-15"
