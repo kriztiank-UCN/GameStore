@@ -1,4 +1,4 @@
-// Purpose: Contains the GameStoreContext class which is used to interact with the database.
+// Purpose: Contains the GameStoreContext class which is used to interact with the database via dependency injection.
 using GameStore.Api.Entities;
 using Microsoft.EntityFrameworkCore;
 

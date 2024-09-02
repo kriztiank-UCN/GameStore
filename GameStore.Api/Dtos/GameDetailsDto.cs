@@ -1,13 +1,13 @@
-// Purpose: DTO for creating a game.
+// Purpose: DTO for Game entity.
 // A DTO is a contract with the client, it defines how the data will be sent to the client and must be kept at all times.
-using System.ComponentModel.DataAnnotations;
-
 namespace GameStore.Api.Dtos;
+
 // a record is imutable
-public record class CreateGameDto
+public record class GameDetailsDto
 (
-  [Required][StringLength(50)] string Name,
+  int Id,
+  string Name,
   int GenreId,
-  [Range(1, 100)] decimal Price,
+  decimal Price,
   DateOnly ReleaseDate
 );
