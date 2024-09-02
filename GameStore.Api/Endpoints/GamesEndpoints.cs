@@ -2,6 +2,7 @@
 using GameStore.Api.Data;
 using GameStore.Api.Dtos;
 using GameStore.Api.Entities;
+using GameStore.Api.Mapping;
 
 namespace GameStore.Api.Endpoints;
 // static class with extension methods, with one call we can map all the endpoints
@@ -53,30 +54,16 @@ public static class GamesEndpoints
     // CreateGameDto is a record class that contains the properties of a game
     group.MapPost("/", (CreateGameDto newGame, GameStoreContext dbContext) =>
     {
-      // Create entity from DTO
-      Game game = new()
-      {
-        Name = newGame.Name,
-        Genre = dbContext.Genres.Find(newGame.GenreId),
-        GenreId = newGame.GenreId,
-        Price = newGame.Price,
-        ReleaseDate = newGame.ReleaseDate
-      };
+      // Create entity from DTO (ToEntity is passed in from GameMapping.cs)
+      Game game = newGame.ToEntity();
+      game.Genre = dbContext.Genres.Find(newGame.GenreId);
+
       // Add entity to the database
       dbContext.Add(game);
       dbContext.SaveChanges();
 
-      // Create DTO from entity
-      GameDto gameDto = new(
-        game.Id,
-        game.Name,
-        // ! null forgiving operator, is used to tell the compiler that Genre is not null
-        game.Genre!.Name,
-        game.Price,
-        game.ReleaseDate
-        );
-      // Return back to the client
-      return Results.CreatedAtRoute(GetGameEndpointName, new { id = game.Id }, gameDto);
+      // Return back to the client (ToDto is passed in from GameMapping.cs)
+      return Results.CreatedAtRoute(GetGameEndpointName, new { id = game.Id }, game.ToDto());
     });
 
     // PUT /games/1
