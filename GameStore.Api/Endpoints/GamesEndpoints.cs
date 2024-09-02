@@ -53,7 +53,7 @@ public static class GamesEndpoints
     // CreateGameDto is a record class that contains the properties of a game
     group.MapPost("/", (CreateGameDto newGame, GameStoreContext dbContext) =>
     {
-
+      // Create entity from DTO
       Game game = new()
       {
         Name = newGame.Name,
@@ -62,10 +62,11 @@ public static class GamesEndpoints
         Price = newGame.Price,
         ReleaseDate = newGame.ReleaseDate
       };
-
+      // Add entity to the database
       dbContext.Add(game);
       dbContext.SaveChanges();
 
+      // Create DTO from entity
       GameDto gameDto = new(
         game.Id,
         game.Name,
@@ -74,7 +75,7 @@ public static class GamesEndpoints
         game.Price,
         game.ReleaseDate
         );
-
+      // Return back to the client
       return Results.CreatedAtRoute(GetGameEndpointName, new { id = game.Id }, gameDto);
     });
 
